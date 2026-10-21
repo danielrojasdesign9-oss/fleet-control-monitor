@@ -1,0 +1,347 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens — "Apex Telemetry & Control" (Stitch)
+ * Paleta operacional: neutros fríos + acento esmeralda.
+ * Escala de espaciado base 4px. Radii 4/8. Bordes 1px.
+ */
+
+:root {
+  color-scheme: light;
+
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-3: #e8eef6;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --text: #0f172a;
+  --text-2: #334155;
+  --text-3: #64748b;
+
+  --primary: #006c49;
+  --primary-hover: #005236;
+  --accent: #10b981;
+  --accent-soft: #ecfdf5;
+  --accent-border: #a7f3d0;
+  --on-accent: #ffffff;
+
+  --online: #059669;
+  --online-soft: #ecfdf5;
+  --offline: #64748b;
+  --offline-soft: #f1f5f9;
+  --danger: #b91c1c;
+  --danger-soft: #fef2f2;
+  --danger-border: #fecaca;
+  --warn: #b45309;
+  --warn-soft: #fffbeb;
+
+  --focus: #059669;
+  --flash: #ecfdf5;
+
+  --shadow-card: 0 1px 3px rgb(15 23 42 / 0.08);
+  --shadow-float: 0 4px 6px -1px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.06);
+
+  --map-light: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  --map-dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+  --font-ui: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0a1424;
+  --surface: #0f1d33;
+  --surface-2: #14253f;
+  --surface-3: #1a2f4d;
+  --border: #243b5c;
+  --border-strong: #33507a;
+
+  --text: #e8eef9;
+  --text-2: #b6c4d9;
+  --text-3: #8b9cb6;
+
+  --primary: #34d399;
+  --primary-hover: #6ee7b7;
+  --accent: #34d399;
+  --accent-soft: #052e22;
+  --accent-border: #065f46;
+  --on-accent: #052e1c;
+
+  --online: #34d399;
+  --online-soft: #052e22;
+  --offline: #8b9cb6;
+  --offline-soft: #1a2f4d;
+  --danger: #f87171;
+  --danger-soft: #450a0a;
+  --danger-border: #7f1d1d;
+  --warn: #fbbf24;
+  --warn-soft: #422006;
+
+  --focus: #34d399;
+  --flash: #052e22;
+
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.4);
+  --shadow-float: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-border: var(--accent-border);
+  --color-on-accent: var(--on-accent);
+  --color-online: var(--online);
+  --color-online-soft: var(--online-soft);
+  --color-offline: var(--offline);
+  --color-offline-soft: var(--offline-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-border: var(--danger-border);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-flash: var(--flash);
+  --font-ui: var(--font-ui);
+  --font-mono: var(--font-mono);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.label-caps {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Skeleton (shimmer sutil, sin CLS) --- */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.22), transparent);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+[data-theme='dark'] .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.05), transparent);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* --- Pulso del indicador online --- */
+.pulse-dot {
+  position: relative;
+  display: inline-flex;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--online);
+  flex-shrink: 0;
+}
+
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  border: 2px solid var(--online);
+  opacity: 0;
+  animation: pulse-ring 2.2s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+.pulse-dot--offline {
+  background: var(--offline);
+}
+
+.pulse-dot--offline::after {
+  display: none;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.85;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* --- Flash de dato nuevo (Telemetry Value Ticker) --- */
+.value-flash {
+  animation: value-flash 0.9s ease-out;
+}
+
+@keyframes value-flash {
+  0% {
+    background-color: var(--flash);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* --- Marcador de vehículo (Leaflet divIcon) --- */
+.vehicle-marker {
+  background: transparent;
+  border: none;
+}
+
+.vehicle-marker__wrap {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+}
+
+.vehicle-marker__pulse {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  border: 2px solid var(--online);
+  opacity: 0;
+  animation: pulse-ring 2.2s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+.vehicle-marker__body {
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background: var(--surface);
+  border: 1.5px solid var(--online);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-float);
+  transition: border-color 0.3s ease;
+}
+
+.vehicle-marker--offline .vehicle-marker__body {
+  border-color: var(--offline);
+}
+
+.vehicle-marker--offline .vehicle-marker__pulse {
+  display: none;
+}
+
+.vehicle-marker__arrow {
+  color: var(--online);
+  display: grid;
+  place-items: center;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.vehicle-marker--offline .vehicle-marker__arrow {
+  color: var(--offline);
+}
+
+/* --- Leaflet: controles y popup acordes al token set --- */
+.leaflet-container {
+  font-family: var(--font-ui);
+  background: var(--surface-2);
+}
+
+.leaflet-control-zoom a {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--surface-2) !important;
+}
+
+.leaflet-bar {
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-card) !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+}
+
+.leaflet-control-attribution {
+  background: var(--surface) !important;
+  color: var(--text-3) !important;
+  font-size: 10px !important;
+  padding: 2px 6px !important;
+  border-radius: var(--radius-sm) 0 0 0;
+}
+
+.leaflet-control-attribution a {
+  color: var(--text-2) !important;
+}
+
+/* --- Scrollbars discretas --- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+/* --- Respeta prefers-reduced-motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
