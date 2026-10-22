@@ -356,6 +356,23 @@ body {
   filter: none;
 }
 
+/* --- Laboratorio QA: mapa de alto contraste (WCAG 1.4.11) --- */
+.map-view--high-contrast .leaflet-tile-pane {
+  filter: contrast(1.45) saturate(0.75) brightness(0.95);
+}
+
+[data-theme='dark'] .map-view--high-contrast .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) contrast(1.45) brightness(0.85);
+}
+
+[data-theme='dark'] .map-view--high-contrast.map-view--satellite .leaflet-tile-pane {
+  filter: contrast(1.3) brightness(0.8) saturate(0.7);
+}
+
+.map-view--high-contrast .leaflet-control-attribution {
+  font-weight: 600;
+}
+
 /* --- Scrollbars discretas --- */
 * {
   scrollbar-width: thin;

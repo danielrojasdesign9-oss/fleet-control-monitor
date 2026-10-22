@@ -81,6 +81,7 @@ interface MapViewProps {
   selectedId: number | null;
   onSelect: (id: number) => void;
   now: number;
+  highContrast?: boolean;
 }
 
 export function MapView({
@@ -94,6 +95,7 @@ export function MapView({
   selectedId,
   onSelect,
   now,
+  highContrast = false,
 }: MapViewProps) {
   const [mapStyle, setMapStyle] = useState<MapStyle>('streets');
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -293,7 +295,7 @@ export function MapView({
     <div
       className={`relative h-full min-h-[280px] w-full overflow-hidden rounded-[8px] border border-border bg-surface-2${
         mapStyle === 'satellite' ? ' map-view--satellite' : ''
-      }`}
+      }${highContrast ? ' map-view--high-contrast' : ''}`}
     >
       <div ref={containerRef} className="h-full w-full" role="application" aria-label={`Mapa en vivo — ${vehicleLabel}`} />
       {mapStyle === 'satellite' && theme === 'dark' && (

@@ -10,6 +10,9 @@ import { useFleetData } from './hooks/useFleetData';
 import { useTheme } from './lib/useTheme';
 import { connect } from './lib/traccar';
 import { isDeviceOnline } from './lib/format';
+import { isQaEnabled } from './qa/flags';
+import { QaLab } from './qa/QaLab';
+import { useQaState } from './qa/flags';
 
 type Session =
   | { state: 'anonymous' }
@@ -20,6 +23,8 @@ export default function App() {
   const { theme, toggleTheme } = useTheme();
   const [session, setSession] = useState<Session>({ state: 'anonymous' });
   const [now, setNow] = useState(() => Date.now());
+  const qaEnabled = isQaEnabled();
+  const qa = useQaState();
 
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
@@ -55,6 +60,8 @@ export default function App() {
     return isDeviceOnline(fleet.selectedDevice, now);
   }, [fleet.selectedDevice, now]);
 
+  const lab = qaEnabled ? <QaLab /> : null;
+
   if (session.state === 'anonymous' || session.state === 'connecting') {
     return (
       <div className="flex h-full min-h-screen flex-col">
@@ -65,6 +72,7 @@ export default function App() {
           sourceLabel="sin conexión"
         />
         <LoginView onConnect={handleConnect} />
+        {lab}
       </div>
     );
   }
@@ -80,6 +88,7 @@ export default function App() {
           onBack={handleBack}
         />
         <ErrorState error={fleet.error} onRetry={fleet.retry} onBack={handleBack} />
+        {lab}
       </div>
     );
   }
@@ -130,6 +139,7 @@ export default function App() {
                 selectedId={fleet.selectedId}
                 onSelect={fleet.selectDevice}
                 now={now}
+                highContrast={qa.highContrastMap}
               />
             )}
           </div>
@@ -141,6 +151,7 @@ export default function App() {
           </div>
         </main>
       </div>
+      {lab}
     </div>
   );
 }

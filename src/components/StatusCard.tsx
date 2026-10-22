@@ -40,6 +40,8 @@ function Row({ label, children, mono = false }: { label: string; children: React
 export function StatusCard({ device, position, now }: StatusCardProps) {
   const speedKey = position ? Math.round(position.speed * 10) : null;
   const flashSpeed = useFlashKey(speedKey);
+  const batteryValue = readNumericAttribute(position?.attributes, 'batteryLevel');
+  const flashBattery = useFlashKey(batteryValue === null ? null : Math.round(batteryValue));
 
   if (!device) {
     return (
@@ -50,7 +52,7 @@ export function StatusCard({ device, position, now }: StatusCardProps) {
   }
 
   const online = isDeviceOnline(device, now);
-  const battery = readNumericAttribute(position?.attributes, 'batteryLevel');
+  const battery = batteryValue;
   const fuel = readNumericAttribute(position?.attributes, 'fuel');
   const ignition = position?.attributes?.['ignition'] === true;
   const speedKmh = position ? knotsToKmh(position.speed) : null;
@@ -128,7 +130,7 @@ export function StatusCard({ device, position, now }: StatusCardProps) {
           {battery === null ? (
             <span className="text-text-3">—</span>
           ) : (
-            <span className="inline-flex items-center gap-1.5">
+            <span className={`inline-flex items-center gap-1.5 rounded-[4px] px-1 ${flashBattery ? 'value-flash' : ''}`}>
               <Battery size={12} aria-hidden="true" className="text-text-3" />
               {Math.round(battery)}%
             </span>

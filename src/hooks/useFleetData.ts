@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchPositions, fetchDevices, TraccarError } from '../lib/traccar';
 import type { TraccarDevice, TraccarPosition } from '../types/traccar';
+import { useQaState } from '../qa/flags';
 
 const POLL_MS = 5000;
 
@@ -15,6 +16,7 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [refreshNonce, setRefreshNonce] = useState(0);
   const mountedRef = useRef(true);
+  const qa = useQaState();
 
   const retry = useCallback(() => {
     setError(null);
@@ -39,13 +41,32 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
       return;
     }
 
+    if (qa.forceLoading) {
+      setStatus('loading');
+      return;
+    }
+
     let cancelled = false;
     let pollTimer: ReturnType<typeof setTimeout> | undefined;
     let devicesPolls = 0;
 
+    function qaFaultError(): TraccarError | null {
+      switch (qa.fault) {
+        case 'network':
+          return new TraccarError('[QA] Fallo inyectado: sin conexión con el servidor.', 'network');
+        case 'auth':
+          return new TraccarError('[QA] Fallo inyectado: credenciales rechazadas (401).', 'auth', 401);
+        case 'server':
+          return new TraccarError('[QA] Fallo inyectado: el servidor respondió 503.', 'server', 503);
+        default:
+          return null;
+      }
+    }
+
     async function refreshDevices() {
       try {
-        const list = await fetchDevices(baseUrl);
+        if (qa.fault !== 'none' && qa.fault !== 'empty') return;
+        const list = qa.fault === 'empty' ? [] : await fetchDevices(baseUrl);
         if (cancelled || !mountedRef.current) return;
         setDevices(list);
         setSelectedId((current) => {
@@ -59,7 +80,9 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
 
     async function loadDevices() {
       try {
-        const list = await fetchDevices(baseUrl);
+        const injected = qaFaultError();
+        if (injected) throw injected;
+        const list = qa.fault === 'empty' ? [] : await fetchDevices(baseUrl);
         if (cancelled || !mountedRef.current) return;
         setDevices(list);
         setSelectedId((current) => {
@@ -85,7 +108,9 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
         void refreshDevices();
       }
       try {
-        const list = await fetchPositions(baseUrl);
+        const injected = qaFaultError();
+        if (injected) throw injected;
+        const list = qa.fault === 'empty' ? [] : await fetchPositions(baseUrl);
         if (cancelled || !mountedRef.current) return;
         setPositions(list);
         setLastUpdated(Date.now());
@@ -118,7 +143,7 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
       cancelled = true;
       if (pollTimer) clearTimeout(pollTimer);
     };
-  }, [baseUrl, active, refreshNonce]);
+  }, [baseUrl, active, refreshNonce, qa.fault, qa.forceLoading]);
 
   const selectedDevice = devices.find((d) => d.id === selectedId) ?? null;
   const selectedPosition = positions.find((p) => p.deviceId === selectedId) ?? null;
