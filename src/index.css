@@ -221,6 +221,11 @@ body {
   }
 }
 
+/* --- Badges de estado (no interactivos): en oscuro sin borde para no imitar botones --- */
+[data-theme='dark'] .status-chip {
+  border-color: transparent;
+}
+
 /* --- Flash de dato nuevo (Telemetry Value Ticker) --- */
 .value-flash {
   animation: value-flash 0.9s ease-out;

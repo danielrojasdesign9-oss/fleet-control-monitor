@@ -165,6 +165,7 @@ function DemoError() {
 
   return (
     <div className="space-y-2">
+      <p className="text-[11px] font-medium text-text-2">Elija el error a visualizar</p>
       <div className="flex gap-1.5">
         {(['network', 'auth', 'server'] as const).map((k) => (
           <button

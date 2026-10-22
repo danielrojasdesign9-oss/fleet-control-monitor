@@ -89,7 +89,7 @@ export function DeviceList({ devices, positionByDevice, selectedId, onSelect, no
                       {device.name}
                     </span>
                     <span
-                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-[4px] border px-1.5 py-0.5 text-[10px] font-semibold ${
+                      className={`status-chip inline-flex shrink-0 items-center gap-1.5 rounded-[4px] border px-1.5 py-0.5 text-[10px] font-semibold ${
                         online
                           ? 'border-accent-border bg-online-soft text-primary'
                           : 'border-border bg-offline-soft text-text-3'

@@ -30,7 +30,7 @@ export function Header({ theme, onToggleTheme, isLive, sourceLabel, onBack }: He
 
       <div className="flex items-center gap-2 sm:gap-3">
         <span
-          className={`hidden items-center gap-2 rounded-[8px] border px-2.5 py-1.5 text-[12px] font-medium sm:inline-flex ${
+          className={`status-chip hidden items-center gap-2 rounded-[8px] border px-2.5 py-1.5 text-[12px] font-medium sm:inline-flex ${
             isLive
               ? 'border-accent-border bg-accent-soft text-primary'
               : 'border-border bg-surface-2 text-text-3'
@@ -43,7 +43,7 @@ export function Header({ theme, onToggleTheme, isLive, sourceLabel, onBack }: He
           {isLive ? 'En vivo' : 'En espera'}
         </span>
         <span
-          className="hidden items-center gap-1.5 rounded-[8px] border border-border bg-surface-2 px-2.5 py-1.5 font-mono text-[11px] text-text-2 md:inline-flex"
+          className="status-chip hidden items-center gap-1.5 rounded-[8px] border border-border bg-surface-2 px-2.5 py-1.5 font-mono text-[11px] text-text-2 md:inline-flex"
           title="Fuente de datos Traccar"
         >
           <Database size={13} aria-hidden="true" />

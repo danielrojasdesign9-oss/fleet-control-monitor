@@ -38,6 +38,10 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+function fleetDotTitle(name: string, online: boolean): string {
+  return `${name} — ${online ? 'en línea' : 'sin conexión'} — pulsar para seleccionar`;
+}
+
 function easeOutCubic(t: number): number {
   return 1 - Math.pow(1 - t, 3);
 }
@@ -165,7 +169,7 @@ export function MapView({
       markerRef.current = L.marker([target.lat, target.lng], {
         icon: buildMarkerIcon(course, online),
         keyboard: false,
-        title: vehicleLabel,
+        title: `${vehicleLabel} — vehículo seleccionado`,
         alt: `Ubicación de ${vehicleLabel}`,
       }).addTo(map);
       fromRef.current = { ...target };
@@ -183,7 +187,7 @@ export function MapView({
 
     if (prevLabelRef.current !== vehicleLabel) {
       if (element) {
-        (element as HTMLElement).title = vehicleLabel;
+        (element as HTMLElement).title = `${vehicleLabel} — vehículo seleccionado`;
         element.setAttribute('aria-label', `Ubicación de ${vehicleLabel}`);
       }
       prevLabelRef.current = vehicleLabel;
@@ -267,13 +271,15 @@ export function MapView({
         existing.setLatLng([pos.latitude, pos.longitude]);
         if (onlineByIdRef.current.get(device.id) !== deviceOnline) {
           existing.setIcon(buildFleetDotIcon(deviceOnline));
+          const el = existing.getElement();
+          if (el) el.title = fleetDotTitle(device.name, deviceOnline);
           onlineByIdRef.current.set(device.id, deviceOnline);
         }
       } else {
         const marker = L.marker([pos.latitude, pos.longitude], {
           icon: buildFleetDotIcon(deviceOnline),
-          title: device.name,
-          alt: `Vehículo ${device.name} — seleccionar`,
+          title: fleetDotTitle(device.name, deviceOnline),
+          alt: `Vehículo ${device.name} — ${deviceOnline ? 'en línea' : 'sin conexión'} — pulsar para seleccionar`,
           keyboard: true,
           zIndexOffset: -500,
         }).addTo(map);

@@ -20,14 +20,17 @@ export function LoginView({ onConnect }: LoginViewProps) {
   const [serverUrl, setServerUrl] = useState('https://demo4.traccar.org');
   const [busy, setBusy] = useState<'simulator' | 'server' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [errorSource, setErrorSource] = useState<'simulator' | 'server' | null>(null);
 
   async function handleSimulator() {
     setBusy('simulator');
     setError(null);
+    setErrorSource(null);
     try {
       await onConnect({ mode: 'simulator' });
     } catch (err) {
       setError(err instanceof TraccarError ? err.message : 'No se pudo iniciar la sesión de demostración.');
+      setErrorSource('simulator');
     } finally {
       setBusy(null);
     }
@@ -37,14 +40,25 @@ export function LoginView({ onConnect }: LoginViewProps) {
     event.preventDefault();
     setBusy('server');
     setError(null);
+    setErrorSource(null);
     try {
       await onConnect({ mode: 'server', baseUrl: serverUrl.trim(), email: email.trim(), password });
     } catch (err) {
       setError(err instanceof TraccarError ? err.message : 'No se pudo iniciar sesión en el servidor.');
+      setErrorSource('server');
     } finally {
       setBusy(null);
     }
   }
+
+  const errorAlert = error ? (
+    <div
+      role="alert"
+      className="mb-3 rounded-[8px] border border-danger-border bg-danger-soft px-3 py-2.5 text-[13px] text-danger"
+    >
+      {error}
+    </div>
+  ) : null;
 
   return (
     <main className="grid flex-1 place-items-center overflow-y-auto bg-bg px-4 py-10">
@@ -69,15 +83,6 @@ export function LoginView({ onConnect }: LoginViewProps) {
           </div>
         </div>
 
-        {error && (
-          <div
-            role="alert"
-            className="mb-4 rounded-[8px] border border-danger-border bg-danger-soft px-3 py-2.5 text-[13px] text-danger"
-          >
-            {error}
-          </div>
-        )}
-
         <button
           type="button"
           onClick={handleSimulator}
@@ -97,12 +102,14 @@ export function LoginView({ onConnect }: LoginViewProps) {
         <p className="mt-2 text-[12px] leading-4 text-text-3">
           simulator.traccar.org — flota simulada de Londres, sin credenciales, ideal para evaluar la experiencia.
         </p>
+        {errorSource === 'simulator' && errorAlert}
 
         <div className="my-5 flex items-center gap-3" aria-hidden="true">
           <span className="h-px flex-1 bg-border" />
           <span className="label-caps">o tu servidor</span>
           <span className="h-px flex-1 bg-border" />
         </div>
+        {errorSource === 'server' && errorAlert}
 
         <button
           type="button"
@@ -173,8 +180,8 @@ export function LoginView({ onConnect }: LoginViewProps) {
         )}
 
         <p className="mt-5 border-t border-border pt-4 text-[12px] leading-4 text-text-3">
-          Traccar retiró las credenciales demo compartidas. El simulador oficial expone la API en modo lectura;
-          para un servidor propio usa POST <code className="font-mono text-[11px]">/api/session</code>.
+          demo4.traccar.org admite registro de cuentas nuevas (<code className="font-mono text-[11px]">POST /api/users</code>)
+          y el README incluye una cuenta de prueba; el simulador oficial funciona sin credenciales en modo lectura.
         </p>
       </section>
     </main>

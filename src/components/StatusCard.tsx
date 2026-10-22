@@ -71,11 +71,12 @@ export function StatusCard({ device, position, now }: StatusCardProps) {
           <p className="mt-0.5 font-mono text-[11px] text-text-3">ID {device.uniqueId}</p>
         </div>
         <span
-          className={`inline-flex shrink-0 items-center gap-2 rounded-[4px] border px-2 py-1 text-[11px] font-semibold ${
+          className={`status-chip inline-flex shrink-0 items-center gap-2 rounded-[4px] border px-2 py-1 text-[11px] font-semibold ${
             online ? 'border-accent-border bg-online-soft text-primary' : 'border-border bg-offline-soft text-text-3'
           }`}
         >
           <span className={online ? 'pulse-dot' : 'pulse-dot pulse-dot--offline'} aria-hidden="true" />
+          <span className="sr-only">Estado de conexión: </span>
           {online ? 'En línea' : 'Sin conexión'}
         </span>
       </header>
