@@ -44,14 +44,14 @@ npm run dev            # http://127.0.0.1:5173
 | `VITE_TRACCAR_URL` | `/traccar` | Base de la API (proxy same-origin en dev y Vercel) |
 | `VITE_TRACCAR_PROXY_TARGET` | `https://simulator.traccar.org` | Destino del proxy de desarrollo en Vite |
 
-En producción (Vercel) el rewrite de `vercel.json` enruta `/traccar/:path*` → `https://simulator.traccar.org/api/:path*`, evitando CORS (el simulador no envía headers CORS).
+En producción (Vercel) el rewrite de `vercel.json` enruta `/traccar/:path*` → `https://simulator.traccar.org/api/:path*`, evitando CORS (el simulador no envía headers CORS). El mismo esquema aplica a `demo4.traccar.org` vía `/demo4/:path*` → `https://demo4.traccar.org/api/:path*`.
 
 ## Uso
 
 1. **Usar simulador oficial** — conecta contra `simulator.traccar.org` con la flota en vivo de Londres (sin credenciales; el endpoint de sesión devuelve 403 read-only y se continúa en modo lectura).
-2. **Iniciar sesión con tu servidor** — expande el formulario, introduce URL, email y contraseña. Requiere CORS habilitado o proxy configurado.
+2. **Iniciar sesión con tu servidor** — expande el formulario, introduce URL, email y contraseña. `demo4.traccar.org` (viene precargado) funciona **out-of-the-box** vía el proxy same-origin incluido (`/demo4` → `demo4.traccar.org/api`, igual que `/traccar` para el simulador). Cualquier otro servidor Traccar requiere CORS habilitado o agregar un rewrite equivalente en `vercel.json`/Vite.
 
-**Cuenta de prueba** (cuenta desechable en el servidor público de demo4, sin vehículos ni permisos de admin; verificada el 2026-10-22):
+**Cuenta de prueba** (cuenta desechable en el servidor público de demo4, sin permisos de admin; verificada el 2026-10-22):
 
 - URL: `https://demo4.traccar.org` (ya viene precargada)
 - Email: `fleet.demo.433745790@example.com`
@@ -84,7 +84,7 @@ src/
 
 ### Decisiones técnicas
 
-- **Proxy same-origin**: el simulador Traccar no emite `Access-Control-Allow-Origin`; en dev el proxy de Vite y en Vercel el rewrite resuelven el CORS sin tocar la lógica de la app.
+- **Proxy same-origin**: ni el simulador Traccar ni `demo4.traccar.org` emiten `Access-Control-Allow-Origin` (verificado 2026-10-22); en dev el proxy de Vite y en Vercel los rewrites resuelven el CORS sin tocar la lógica de la app. `PROXIED_HOSTS` en `traccar.ts` mapea hosts conocidos (`demo4.traccar.org` → `/demo4`); servidores propios quedan directos y requieren CORS a su lado.
 - **`connect()` flexible**: en modo `simulator` tolera 401/403 del `POST /session` y sigue con `GET /devices` + `GET /positions` anónimos; en modo `server` el login es obligatorio.
 - **Smoothing del marcador**: cada nueva posición dispara una interpolación ease-out-cubic de ~1.6 s vía `requestAnimationFrame`; respeta `prefers-reduced-motion` (salto instantáneo).
 - **Tokens como CSS Custom Properties** + `@theme inline` de Tailwind v4: un solo source of truth para light/dark y futuras extensiones de design system.
