@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Map, Mountain, Satellite } from 'lucide-react';
-import type { TraccarPosition } from '../types/traccar';
+import { Map as MapIcon, Mountain, Satellite } from 'lucide-react';
+import { isDeviceOnline } from '../lib/format';
+import type { TraccarDevice, TraccarPosition } from '../types/traccar';
 
 const EASE_MS = 1600;
 
@@ -27,8 +28,8 @@ const TILE_CONFIG: Record<MapStyle, { url: string; attribution: string; maxZoom:
   },
 };
 
-const MAP_STYLES: { id: MapStyle; label: string; Icon: typeof Map }[] = [
-  { id: 'streets', label: 'Calles', Icon: Map },
+const MAP_STYLES: { id: MapStyle; label: string; Icon: typeof MapIcon }[] = [
+  { id: 'streets', label: 'Calles', Icon: MapIcon },
   { id: 'terrain', label: 'Relieve', Icon: Mountain },
   { id: 'satellite', label: 'Satélite', Icon: Satellite },
 ];
@@ -60,19 +61,45 @@ function buildMarkerIcon(course: number, online: boolean): L.DivIcon {
   });
 }
 
+function buildFleetDotIcon(online: boolean): L.DivIcon {
+  return L.divIcon({
+    className: `fleet-dot${online ? '' : ' fleet-dot--offline'}`,
+    html: '<span class="fleet-dot__body"></span>',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+  });
+}
+
 interface MapViewProps {
   position: TraccarPosition | null;
   online: boolean;
   theme: 'light' | 'dark';
   vehicleLabel: string;
   loading?: boolean;
+  devices: TraccarDevice[];
+  positionByDevice: Map<number, TraccarPosition>;
+  selectedId: number | null;
+  onSelect: (id: number) => void;
+  now: number;
 }
 
-export function MapView({ position, online, theme, vehicleLabel, loading = false }: MapViewProps) {
+export function MapView({
+  position,
+  online,
+  theme,
+  vehicleLabel,
+  loading = false,
+  devices,
+  positionByDevice,
+  selectedId,
+  onSelect,
+  now,
+}: MapViewProps) {
   const [mapStyle, setMapStyle] = useState<MapStyle>('streets');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const tilesRef = useRef<L.TileLayer | null>(null);
+  const othersRef = useRef<Map<number, L.Marker>>(new Map());
   const markerRef = useRef<L.Marker | null>(null);
   const animRef = useRef<number | null>(null);
   const fromRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -116,7 +143,16 @@ export function MapView({ position, online, theme, vehicleLabel, loading = false
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !position) return;
+    if (!map) return;
+
+    if (!position) {
+      if (markerRef.current) {
+        map.removeLayer(markerRef.current);
+        markerRef.current = null;
+        prevCourseRef.current = null;
+      }
+      return;
+    }
 
     const target = { lat: position.latitude, lng: position.longitude };
     const course = position.course;
@@ -198,6 +234,45 @@ export function MapView({ position, online, theme, vehicleLabel, loading = false
     if (position) return;
     hasCenteredRef.current = false;
   }, [position]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    const seen = new Set<number>();
+
+    for (const device of devices) {
+      if (device.id === selectedId) continue;
+      const pos = positionByDevice.get(device.id);
+      if (!pos) continue;
+      seen.add(device.id);
+
+      const deviceOnline = isDeviceOnline(device, now);
+      const existing = othersRef.current.get(device.id);
+
+      if (existing) {
+        existing.setLatLng([pos.latitude, pos.longitude]);
+        existing.setIcon(buildFleetDotIcon(deviceOnline));
+      } else {
+        const marker = L.marker([pos.latitude, pos.longitude], {
+          icon: buildFleetDotIcon(deviceOnline),
+          title: device.name,
+          alt: `Vehículo ${device.name} — seleccionar`,
+          keyboard: true,
+          zIndexOffset: -500,
+        }).addTo(map);
+        marker.on('click', () => onSelect(device.id));
+        othersRef.current.set(device.id, marker);
+      }
+    }
+
+    for (const [id, marker] of Array.from(othersRef.current.entries())) {
+      if (!seen.has(id)) {
+        map.removeLayer(marker);
+        othersRef.current.delete(id);
+      }
+    }
+  }, [devices, positionByDevice, selectedId, now, onSelect]);
 
   return (
     <div

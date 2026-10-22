@@ -144,7 +144,7 @@ export function StatusCard({ device, position, now }: StatusCardProps) {
             </span>
           )}
         </Row>
-        <Row label="Ignición">
+        <Row label="Motor encendido">
           {position ? (
             <span className="inline-flex items-center gap-1.5">
               <Signal size={12} aria-hidden="true" className={ignition ? 'text-primary' : 'text-text-3'} />

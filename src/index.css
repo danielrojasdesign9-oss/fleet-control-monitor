@@ -291,6 +291,27 @@ body {
   color: var(--offline);
 }
 
+/* --- Puntos de flota (demás vehículos, no seleccionados) --- */
+.fleet-dot {
+  background: transparent;
+  border: none;
+}
+
+.fleet-dot__body {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--online);
+  border: 2px solid var(--surface);
+  outline: 2px solid rgb(15 23 42 / 0.8);
+  box-shadow: var(--shadow-card);
+}
+
+.fleet-dot--offline .fleet-dot__body {
+  background: var(--offline);
+}
+
 /* --- Leaflet: controles y popup acordes al token set --- */
 .leaflet-container {
   font-family: var(--font-ui);

@@ -125,6 +125,11 @@ export default function App() {
                 theme={theme}
                 vehicleLabel={fleet.selectedDevice?.name ?? 'vehículo seleccionado'}
                 loading={loading}
+                devices={fleet.devices}
+                positionByDevice={fleet.positionByDevice}
+                selectedId={fleet.selectedId}
+                onSelect={fleet.selectDevice}
+                now={now}
               />
             )}
           </div>
