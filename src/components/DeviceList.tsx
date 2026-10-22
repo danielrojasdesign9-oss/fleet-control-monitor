@@ -55,7 +55,15 @@ export function DeviceList({ devices, positionByDevice, selectedId, onSelect, no
         </div>
       </div>
 
-      <ul className="flex-1 overflow-y-auto" role="listbox" aria-label="Vehículos disponibles">
+      <p id="fleet-list-hint" className="sr-only">
+        Selecciona un vehículo para visualizar su información en el panel de la derecha.
+      </p>
+      <ul
+        className="flex-1 overflow-y-auto"
+        role="listbox"
+        aria-label="Vehículos disponibles"
+        aria-describedby="fleet-list-hint"
+      >
         {filtered.length === 0 && (
           <li className="px-4 py-8 text-center text-[13px] text-text-3">
             {devices.length === 0 ? 'Sin vehículos en la flota.' : 'Ningún vehículo coincide con el filtro.'}

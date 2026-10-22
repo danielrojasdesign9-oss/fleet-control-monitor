@@ -80,7 +80,7 @@ export function StatusCard({ device, position, now }: StatusCardProps) {
 
   useEffect(() => {
     if (!device) {
-      setAnnouncement('');
+      setAnnouncement('Sin vehículo seleccionado. Selecciona un vehículo de la lista para visualizar su información en el panel de la derecha.');
       announceRef.current = { id: null, online: null };
       return;
     }
@@ -109,7 +109,9 @@ export function StatusCard({ device, position, now }: StatusCardProps) {
       </div>
       {!device ? (
         <section aria-label="Tarjeta de estado" className="rounded-[8px] border border-border bg-surface p-4">
-          <p className="text-[13px] text-text-3">Selecciona un vehículo para ver su estado.</p>
+          <p className="text-[13px] text-text-3">
+            Selecciona un vehículo de la lista para visualizar su información en el panel de la derecha.
+          </p>
         </section>
       ) : (
         <section
