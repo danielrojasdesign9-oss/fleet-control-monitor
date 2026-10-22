@@ -114,7 +114,7 @@ export default function App() {
           />
         )}
 
-        <main className="flex flex-1 gap-4 p-4 lg:min-h-0 lg:flex-row lg:overflow-hidden">
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:min-h-0 lg:flex-row lg:overflow-hidden">
           <div className="min-w-0 flex-1">
             {loading ? (
               <MapSkeleton />

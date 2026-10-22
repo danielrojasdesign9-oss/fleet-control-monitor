@@ -100,6 +100,8 @@ export function MapView({
   const mapRef = useRef<L.Map | null>(null);
   const tilesRef = useRef<L.TileLayer | null>(null);
   const othersRef = useRef<Map<number, L.Marker>>(new Map());
+  const onlineByIdRef = useRef<Map<number, boolean>>(new Map());
+  const prevLabelRef = useRef<string | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
   const animRef = useRef<number | null>(null);
   const fromRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -169,12 +171,21 @@ export function MapView({
       map.setView([target.lat, target.lng], map.getZoom() < 12 ? 14 : map.getZoom(), { animate: false });
       prevCourseRef.current = course;
       prevOnlineRef.current = online;
+      prevLabelRef.current = vehicleLabel;
       return;
     }
 
     const marker = markerRef.current;
     const element = marker.getElement();
     const arrow = element?.querySelector<HTMLElement>('[data-arrow]');
+
+    if (prevLabelRef.current !== vehicleLabel) {
+      if (element) {
+        (element as HTMLElement).title = vehicleLabel;
+        element.setAttribute('aria-label', `Ubicación de ${vehicleLabel}`);
+      }
+      prevLabelRef.current = vehicleLabel;
+    }
 
     if (prevOnlineRef.current !== online || prevCourseRef.current === null) {
       marker.setIcon(buildMarkerIcon(course, online));
@@ -252,7 +263,10 @@ export function MapView({
 
       if (existing) {
         existing.setLatLng([pos.latitude, pos.longitude]);
-        existing.setIcon(buildFleetDotIcon(deviceOnline));
+        if (onlineByIdRef.current.get(device.id) !== deviceOnline) {
+          existing.setIcon(buildFleetDotIcon(deviceOnline));
+          onlineByIdRef.current.set(device.id, deviceOnline);
+        }
       } else {
         const marker = L.marker([pos.latitude, pos.longitude], {
           icon: buildFleetDotIcon(deviceOnline),
@@ -263,6 +277,7 @@ export function MapView({
         }).addTo(map);
         marker.on('click', () => onSelect(device.id));
         othersRef.current.set(device.id, marker);
+        onlineByIdRef.current.set(device.id, deviceOnline);
       }
     }
 

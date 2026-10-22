@@ -348,11 +348,11 @@ body {
 }
 
 /* --- Tema oscuro: oscurece tiles claras (calles/relieve); el satélite usa overlay propio --- */
-[data-theme='dark'] .leaflet-tile-container {
+[data-theme='dark'] .leaflet-tile-pane {
   filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92);
 }
 
-[data-theme='dark'] .map-view--satellite .leaflet-tile-container {
+[data-theme='dark'] .map-view--satellite .leaflet-tile-pane {
   filter: none;
 }
 

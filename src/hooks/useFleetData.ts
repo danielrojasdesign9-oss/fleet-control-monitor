@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchPositions, fetchDevices, TraccarError } from '../lib/traccar';
 import type { TraccarDevice, TraccarPosition } from '../types/traccar';
 
@@ -41,6 +41,21 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
 
     let cancelled = false;
     let pollTimer: ReturnType<typeof setTimeout> | undefined;
+    let devicesPolls = 0;
+
+    async function refreshDevices() {
+      try {
+        const list = await fetchDevices(baseUrl);
+        if (cancelled || !mountedRef.current) return;
+        setDevices(list);
+        setSelectedId((current) => {
+          if (current !== null && list.some((d) => d.id === current)) return current;
+          return list[0]?.id ?? null;
+        });
+      } catch {
+        // refresh silencioso: conserva la lista anterior ante un blip
+      }
+    }
 
     async function loadDevices() {
       try {
@@ -65,6 +80,10 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
     }
 
     async function pollPositions() {
+      devicesPolls += 1;
+      if (devicesPolls % 6 === 0) {
+        void refreshDevices();
+      }
       try {
         const list = await fetchPositions(baseUrl);
         if (cancelled || !mountedRef.current) return;
@@ -74,7 +93,10 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
         setStatus((prev) => (prev === 'ready' ? prev : 'ready'));
       } catch (err) {
         if (cancelled || !mountedRef.current) return;
-        if (err instanceof TraccarError && err.kind === 'network') {
+        if (
+          err instanceof TraccarError &&
+          (err.kind === 'network' || err.kind === 'auth' || err.kind === 'server')
+        ) {
           setError(err);
           setStatus('error');
         }
@@ -100,7 +122,7 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
 
   const selectedDevice = devices.find((d) => d.id === selectedId) ?? null;
   const selectedPosition = positions.find((p) => p.deviceId === selectedId) ?? null;
-  const positionByDevice = new Map(positions.map((p) => [p.deviceId, p]));
+  const positionByDevice = useMemo(() => new Map(positions.map((p) => [p.deviceId, p])), [positions]);
 
   return {
     devices,

@@ -15,8 +15,8 @@ interface LoginViewProps {
 
 export function LoginView({ onConnect }: LoginViewProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [email, setEmail] = useState('demo');
-  const [password, setPassword] = useState('demo');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [serverUrl, setServerUrl] = useState('https://demo4.traccar.org');
   const [busy, setBusy] = useState<'simulator' | 'server' | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -140,6 +140,7 @@ export function LoginView({ onConnect }: LoginViewProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                placeholder="tu@email.com"
                 autoComplete="username"
                 className="h-9 w-full rounded-[8px] border border-border bg-surface px-3 text-[13px] text-text transition-colors focus:border-accent"
               />
@@ -151,6 +152,7 @@ export function LoginView({ onConnect }: LoginViewProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                placeholder="••••••••"
                 autoComplete="current-password"
                 className="h-9 w-full rounded-[8px] border border-border bg-surface px-3 text-[13px] text-text transition-colors focus:border-accent"
               />
