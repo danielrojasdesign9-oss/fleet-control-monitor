@@ -3,6 +3,10 @@
     {
       "source": "/traccar/:path*",
       "destination": "https://simulator.traccar.org/api/:path*"
+    },
+    {
+      "source": "/demo4/:path*",
+      "destination": "https://demo4.traccar.org/api/:path*"
     }
   ],
   "headers": [

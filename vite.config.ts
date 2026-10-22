@@ -13,6 +13,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/traccar/, '/api'),
       },
+      '/demo4': {
+        target: 'https://demo4.traccar.org',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/demo4/, '/api'),
+      },
     },
   },
 });

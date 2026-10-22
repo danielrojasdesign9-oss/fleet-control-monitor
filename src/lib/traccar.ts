@@ -11,12 +11,26 @@ export type { TraccarDevice, TraccarPosition, TraccarServer, TraccarUser };
 
 const DEFAULT_BASE = import.meta.env.VITE_TRACCAR_URL ?? '/traccar';
 
+/** demo4.traccar.org no publica Access-Control-Allow-Origin: se rutea por nuestro proxy same-origin. */
+const PROXIED_HOSTS: Record<string, string> = {
+  'demo4.traccar.org': '/demo4',
+};
+
 export interface TraccarClientOptions {
   baseUrl?: string;
 }
 
 function normalizeBase(baseUrl?: string): string {
-  const base = (baseUrl ?? DEFAULT_BASE).trim().replace(/\/+$/, '');
+  const raw = (baseUrl ?? DEFAULT_BASE).trim();
+  if (raw.length > 0) {
+    try {
+      const proxied = PROXIED_HOSTS[new URL(raw).hostname];
+      if (proxied) return proxied;
+    } catch {
+      // ruta relativa (proxy local) — se usa tal cual
+    }
+  }
+  const base = raw.replace(/\/+$/, '');
   return base.length > 0 ? base : DEFAULT_BASE;
 }
 
