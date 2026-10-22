@@ -37,6 +37,38 @@ function Row({ label, children, mono = false }: { label: string; children: React
   );
 }
 
+function buildFullAnnouncement(
+  device: TraccarDevice,
+  position: TraccarPosition | null,
+  online: boolean,
+  now: number,
+): string {
+  const parts = [
+    `Vehículo ${device.name} seleccionado`,
+    `ID ${device.uniqueId}`,
+    online ? 'En línea' : 'Sin conexión',
+  ];
+
+  if (position) {
+    parts.push(`Velocidad actual: ${formatSpeed(position.speed)} kilómetros por hora`);
+    parts.push(`Rumbo ${Math.round(position.course)} grados`);
+    parts.push(`Última actualización: ${formatRelativeTime(position.fixTime, now)}`);
+    parts.push(`Ubicación ${formatCoordinate(position.latitude, 'lat')}, ${formatCoordinate(position.longitude, 'lon')}`);
+    if (position.address) parts.push(`Zona ${position.address}`);
+    const battery = readNumericAttribute(position.attributes, 'batteryLevel');
+    parts.push(battery === null ? 'Batería sin datos' : `Batería ${Math.round(battery)} por ciento`);
+    const fuel = readNumericAttribute(position.attributes, 'fuel');
+    parts.push(fuel === null ? 'Combustible sin datos' : `Combustible ${Math.round(fuel)} por ciento`);
+    parts.push(position.attributes?.['ignition'] === true ? 'Motor encendido' : 'Motor apagado');
+    parts.push(`Protocolo ${position.protocol ?? 'sin datos'}`);
+  } else {
+    parts.push('Sin señal GPS');
+    parts.push(`Última actualización: ${formatRelativeTime(device.lastUpdate, now)}`);
+  }
+
+  return `${parts.join('. ')}.`;
+}
+
 export function StatusCard({ device, position, now }: StatusCardProps) {
   const speedKey = position ? Math.round(position.speed * 10) : null;
   const flashSpeed = useFlashKey(speedKey);
@@ -57,8 +89,7 @@ export function StatusCard({ device, position, now }: StatusCardProps) {
     const selectionChanged = prev.id !== device.id;
     const statusChanged = prev.id === device.id && prev.online !== null && prev.online !== isOnline;
     if (selectionChanged) {
-      const speedText = position ? `, ${formatSpeed(position.speed)} kilómetros por hora` : '';
-      setAnnouncement(`Vehículo ${device.name} seleccionado. ${isOnline ? 'En línea' : 'Sin conexión'}${speedText}.`);
+      setAnnouncement(buildFullAnnouncement(device, position, isOnline, now));
     } else if (statusChanged) {
       setAnnouncement(`${device.name} ahora ${isOnline ? 'en línea' : 'sin conexión'}.`);
     }
@@ -83,7 +114,6 @@ export function StatusCard({ device, position, now }: StatusCardProps) {
       ) : (
         <section
           id="status-card"
-          tabIndex={-1}
           aria-labelledby="status-card-title"
           className="flex flex-col rounded-[8px] border border-border bg-surface shadow-[var(--shadow-card)]"
         >
