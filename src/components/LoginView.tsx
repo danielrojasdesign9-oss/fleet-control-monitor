@@ -130,7 +130,7 @@ export function LoginView({ onConnect }: LoginViewProps) {
                 onChange={(e) => setServerUrl(e.target.value)}
                 required
                 autoComplete="url"
-                className="h-9 w-full rounded-[8px] border border-border bg-surface px-3 font-mono text-[12px] text-text outline-none transition-colors focus:border-accent"
+                className="h-9 w-full rounded-[8px] border border-border bg-surface px-3 font-mono text-[12px] text-text transition-colors focus:border-accent"
               />
             </label>
             <label className="block">
@@ -141,7 +141,7 @@ export function LoginView({ onConnect }: LoginViewProps) {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="username"
-                className="h-9 w-full rounded-[8px] border border-border bg-surface px-3 text-[13px] text-text outline-none transition-colors focus:border-accent"
+                className="h-9 w-full rounded-[8px] border border-border bg-surface px-3 text-[13px] text-text transition-colors focus:border-accent"
               />
             </label>
             <label className="block">
@@ -152,7 +152,7 @@ export function LoginView({ onConnect }: LoginViewProps) {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                className="h-9 w-full rounded-[8px] border border-border bg-surface px-3 text-[13px] text-text outline-none transition-colors focus:border-accent"
+                className="h-9 w-full rounded-[8px] border border-border bg-surface px-3 text-[13px] text-text transition-colors focus:border-accent"
               />
             </label>
             <button

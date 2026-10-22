@@ -50,7 +50,7 @@ export function DeviceList({ devices, positionByDevice, selectedId, onSelect, no
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Filtrar por nombre o ID…"
             aria-label="Filtrar vehículos por nombre o identificador"
-            className="h-9 w-full rounded-[8px] border border-border bg-surface-2 pl-8 pr-3 text-[13px] text-text outline-none transition-colors placeholder:text-text-3 focus:border-accent"
+            className="h-9 w-full rounded-[8px] border border-border bg-surface-2 pl-8 pr-3 text-[13px] text-text transition-colors placeholder:text-text-3 focus:border-accent"
           />
         </div>
       </div>

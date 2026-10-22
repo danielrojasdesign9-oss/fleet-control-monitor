@@ -1,9 +1,37 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { Map, Mountain, Satellite } from 'lucide-react';
 import type { TraccarPosition } from '../types/traccar';
 
 const EASE_MS = 1600;
+
+type MapStyle = 'streets' | 'terrain' | 'satellite';
+
+const TILE_CONFIG: Record<MapStyle, { url: string; attribution: string; maxZoom: number }> = {
+  streets: {
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+  },
+  terrain: {
+    url: 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution:
+      'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, SRTM | Map style &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+    maxZoom: 17,
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution: 'Imagery &copy; <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics',
+    maxZoom: 19,
+  },
+};
+
+const MAP_STYLES: { id: MapStyle; label: string; Icon: typeof Map }[] = [
+  { id: 'streets', label: 'Calles', Icon: Map },
+  { id: 'terrain', label: 'Relieve', Icon: Mountain },
+  { id: 'satellite', label: 'Satélite', Icon: Satellite },
+];
 
 function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -41,6 +69,7 @@ interface MapViewProps {
 }
 
 export function MapView({ position, online, theme, vehicleLabel, loading = false }: MapViewProps) {
+  const [mapStyle, setMapStyle] = useState<MapStyle>('streets');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const tilesRef = useRef<L.TileLayer | null>(null);
@@ -78,17 +107,12 @@ export function MapView({ position, online, theme, vehicleLabel, loading = false
       tilesRef.current = null;
     }
 
-    const raw =
-      theme === 'dark'
-        ? getComputedStyle(document.documentElement).getPropertyValue('--map-dark')
-        : getComputedStyle(document.documentElement).getPropertyValue('--map-light');
-    const url = raw.trim().replace(/^['"]|['"]$/g, '') || 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-    tilesRef.current = L.tileLayer(url, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19,
+    const config = TILE_CONFIG[mapStyle];
+    tilesRef.current = L.tileLayer(config.url, {
+      attribution: config.attribution,
+      maxZoom: config.maxZoom,
     }).addTo(map);
-  }, [theme]);
+  }, [mapStyle]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -176,8 +200,35 @@ export function MapView({ position, online, theme, vehicleLabel, loading = false
   }, [position]);
 
   return (
-    <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-[8px] border border-border bg-surface-2">
+    <div
+      className={`relative h-full min-h-[280px] w-full overflow-hidden rounded-[8px] border border-border bg-surface-2${
+        mapStyle === 'satellite' ? ' map-view--satellite' : ''
+      }`}
+    >
       <div ref={containerRef} className="h-full w-full" role="application" aria-label={`Mapa en vivo — ${vehicleLabel}`} />
+      {mapStyle === 'satellite' && theme === 'dark' && (
+        <div className="pointer-events-none absolute inset-0 z-[450] bg-[#0a1424]/30" aria-hidden="true" />
+      )}
+      <div
+        role="group"
+        aria-label="Estilo del mapa"
+        className="absolute right-3 top-3 z-[500] flex rounded-[8px] border border-border bg-surface/95 p-0.5 shadow-[var(--shadow-card)]"
+      >
+        {MAP_STYLES.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            type="button"
+            aria-pressed={mapStyle === id}
+            onClick={() => setMapStyle(id)}
+            className={`flex h-8 items-center gap-1.5 rounded-[6px] px-2.5 text-[12px] font-semibold transition-colors ${
+              mapStyle === id ? 'bg-primary text-on-accent' : 'text-text-2 hover:bg-surface-2'
+            }`}
+          >
+            <Icon size={14} aria-hidden="true" />
+            {label}
+          </button>
+        ))}
+      </div>
       {loading && (
         <div className="pointer-events-none absolute left-3 top-3 z-[500] rounded-[8px] border border-border bg-surface/95 px-2.5 py-1.5 text-[11px] font-semibold text-text-2 shadow-[var(--shadow-card)]">
           Cargando mapa…

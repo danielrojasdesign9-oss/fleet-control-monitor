@@ -43,9 +43,6 @@
   --shadow-card: 0 1px 3px rgb(15 23 42 / 0.08);
   --shadow-float: 0 4px 6px -1px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.06);
 
-  --map-light: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-  --map-dark: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-
   --font-ui: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
 }
@@ -329,9 +326,13 @@ body {
   color: var(--text-2) !important;
 }
 
-/* --- Tema oscuro: oscurece las tiles OSM con filtro CSS --- */
+/* --- Tema oscuro: oscurece tiles claras (calles/relieve); el satélite usa overlay propio --- */
 [data-theme='dark'] .leaflet-tile-container {
   filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92);
+}
+
+[data-theme='dark'] .map-view--satellite .leaflet-tile-container {
+  filter: none;
 }
 
 /* --- Scrollbars discretas --- */
