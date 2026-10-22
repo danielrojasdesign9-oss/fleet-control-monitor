@@ -49,7 +49,15 @@ En producción (Vercel) el rewrite de `vercel.json` enruta `/traccar/:path*` →
 ## Uso
 
 1. **Usar simulador oficial** — conecta contra `simulator.traccar.org` con la flota en vivo de Londres (sin credenciales; el endpoint de sesión devuelve 403 read-only y se continúa en modo lectura).
-2. **Iniciar sesión con tu servidor** — expande el formulario, introduce URL (p. ej. `https://demo4.traccar.org`), email y contraseña. Requiere CORS habilitado o proxy configurado.
+2. **Iniciar sesión con tu servidor** — expande el formulario, introduce URL, email y contraseña. Requiere CORS habilitado o proxy configurado.
+
+**Cuenta de prueba** (cuenta desechable en el servidor público de demo4, sin vehículos ni permisos de admin; verificada el 2026-10-22):
+
+- URL: `https://demo4.traccar.org` (ya viene precargada)
+- Email: `fleet.demo.433745790@example.com`
+- Contraseña: `Demo123456!`
+
+demo4 tiene `registration: true`: admite crear cuentas nuevas por API (`POST /api/users`). Con una cuenta nueva verás el estado vacío real de la flota; el simulador (opción 1) es el que trae vehículos en vivo.
 
 ## Arquitectura
 
