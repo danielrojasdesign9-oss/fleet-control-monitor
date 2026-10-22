@@ -100,9 +100,8 @@ export async function fetchDevices(baseUrl?: string): Promise<TraccarDevice[]> {
   return request<TraccarDevice[]>(normalizeBase(baseUrl), '/devices');
 }
 
-export async function fetchPositions(baseUrl?: string, deviceId?: number): Promise<TraccarPosition[]> {
-  const query = deviceId !== undefined ? `?deviceId=${deviceId}` : '';
-  return request<TraccarPosition[]>(normalizeBase(baseUrl), `/positions${query}`);
+export async function fetchPositions(baseUrl?: string): Promise<TraccarPosition[]> {
+  return request<TraccarPosition[]>(normalizeBase(baseUrl), '/positions');
 }
 
 /**

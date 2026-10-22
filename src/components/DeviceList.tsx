@@ -1,5 +1,5 @@
 import { Car, Search } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { isDeviceOnline } from '../lib/format';
 import type { TraccarDevice, TraccarPosition } from '../types/traccar';
 
@@ -13,6 +13,7 @@ interface DeviceListProps {
 
 export function DeviceList({ devices, positionByDevice, selectedId, onSelect, now }: DeviceListProps) {
   const [query, setQuery] = useState('');
+  const [filterAnnouncement, setFilterAnnouncement] = useState('');
 
   const filtered = devices.filter((device) => {
     if (!query.trim()) return true;
@@ -24,6 +25,18 @@ export function DeviceList({ devices, positionByDevice, selectedId, onSelect, no
     );
   });
 
+  useEffect(() => {
+    if (devices.length === 0) {
+      setFilterAnnouncement('');
+      return;
+    }
+    if (query.trim() && filtered.length === 0) {
+      setFilterAnnouncement('Ningún vehículo coincide con el filtro.');
+    } else {
+      setFilterAnnouncement('');
+    }
+  }, [query, filtered.length, devices.length]);
+
   const onlineCount = devices.filter((d) => isDeviceOnline(d, now)).length;
 
   return (
@@ -31,6 +44,9 @@ export function DeviceList({ devices, positionByDevice, selectedId, onSelect, no
       aria-label="Lista de vehículos"
       className="flex w-full shrink-0 flex-col border-b border-border bg-surface lg:h-full lg:w-[280px] lg:border-b-0 lg:border-r"
     >
+      <div aria-live="polite" className="sr-only">
+        {filterAnnouncement}
+      </div>
       <div className="border-b border-border px-3 py-3">
         <div className="mb-2 flex items-baseline justify-between gap-2">
           <h2 className="label-caps">Flota</h2>
@@ -58,17 +74,17 @@ export function DeviceList({ devices, positionByDevice, selectedId, onSelect, no
       <p id="fleet-list-hint" className="sr-only">
         Selecciona un vehículo para visualizar su información en el panel de la derecha.
       </p>
+      {filtered.length === 0 && (
+        <p className="px-4 py-8 text-center text-[13px] text-text-3">
+          {devices.length === 0 ? 'Sin vehículos en la flota.' : 'Ningún vehículo coincide con el filtro.'}
+        </p>
+      )}
       <ul
         className="flex-1 overflow-y-auto"
         role="listbox"
         aria-label="Vehículos disponibles"
         aria-describedby="fleet-list-hint"
       >
-        {filtered.length === 0 && (
-          <li className="px-4 py-8 text-center text-[13px] text-text-3">
-            {devices.length === 0 ? 'Sin vehículos en la flota.' : 'Ningún vehículo coincide con el filtro.'}
-          </li>
-        )}
         {filtered.map((device) => {
           const online = isDeviceOnline(device, now);
           const position = positionByDevice.get(device.id);

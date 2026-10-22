@@ -1,4 +1,4 @@
-import { AlertTriangle, LockKeyhole, RefreshCw, ServerOff, WifiOff } from 'lucide-react';
+import { LockKeyhole, RefreshCw, ServerOff, WifiOff } from 'lucide-react';
 import type { TraccarError } from '../types/traccar';
 
 interface ErrorStateProps {
@@ -22,11 +22,6 @@ const META = {
     icon: ServerOff,
     title: 'El servidor respondió con un error',
     body: 'Traccar devolvió una respuesta inesperada. El servicio puede estar saturado; reintenta en unos segundos.',
-  },
-  empty: {
-    icon: AlertTriangle,
-    title: 'Sin datos disponibles',
-    body: 'La conexión funcionó pero no hay vehículos ni posiciones que mostrar todavía.',
   },
 } as const;
 

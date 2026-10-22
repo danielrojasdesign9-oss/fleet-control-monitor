@@ -100,7 +100,7 @@ export function LoginView({ onConnect }: LoginViewProps) {
           <ChevronRight size={16} aria-hidden="true" />
         </button>
         <p className="mt-2 text-[12px] leading-4 text-text-3">
-          simulator.traccar.org — flota simulada de Londres, sin credenciales, ideal para evaluar la experiencia.
+          simulator.traccar.org — flota simulada de Londres, sin credenciales.
         </p>
         {errorSource === 'simulator' && errorAlert}
 

@@ -40,7 +40,7 @@ export interface TraccarPosition {
   attributes?: Record<string, unknown>;
 }
 
-export type ConnectionKind = 'network' | 'auth' | 'server' | 'empty';
+export type ConnectionKind = 'network' | 'auth' | 'server';
 
 export class TraccarError extends Error {
   readonly kind: ConnectionKind;

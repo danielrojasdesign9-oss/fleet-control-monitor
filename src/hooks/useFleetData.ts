@@ -11,9 +11,8 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
   const [devices, setDevices] = useState<TraccarDevice[]>([]);
   const [positions, setPositions] = useState<TraccarPosition[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [status, setStatus] = useState<FleetStatus>(active ? 'loading' : 'loading');
+  const [status, setStatus] = useState<FleetStatus>('loading');
   const [error, setError] = useState<TraccarError | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const [refreshNonce, setRefreshNonce] = useState(0);
   const mountedRef = useRef(true);
   const qa = useQaState();
@@ -113,7 +112,6 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
         const list = qa.fault === 'empty' ? [] : await fetchPositions(baseUrl);
         if (cancelled || !mountedRef.current) return;
         setPositions(list);
-        setLastUpdated(Date.now());
         setError((prev) => (prev && prev.kind === 'network' ? null : prev));
         setStatus((prev) => (prev === 'ready' ? prev : 'ready'));
       } catch (err) {
@@ -159,7 +157,6 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
     selectDevice,
     status,
     error,
-    lastUpdated,
     retry,
   };
 }

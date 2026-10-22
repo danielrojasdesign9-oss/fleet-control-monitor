@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Header } from './components/Header';
 import { LoginView, type ConnectResult } from './components/LoginView';
 import { DeviceList } from './components/DeviceList';
@@ -55,10 +55,7 @@ export default function App() {
     setSession({ state: 'anonymous' });
   }, []);
 
-  const selectedOnline = useMemo(() => {
-    if (!fleet.selectedDevice) return false;
-    return isDeviceOnline(fleet.selectedDevice, now);
-  }, [fleet.selectedDevice, now]);
+  const selectedOnline = fleet.selectedDevice ? isDeviceOnline(fleet.selectedDevice, now) : false;
 
   const lab = qaEnabled ? <QaLab /> : null;
 
