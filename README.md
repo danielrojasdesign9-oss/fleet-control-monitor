@@ -2,7 +2,7 @@
 
 SPA de sala de control (control room) conectada a la API de [Traccar](https://www.traccar.org/). Muestra la flota en un mapa interactivo, el estado del vehículo seleccionado en tiempo real y todos los estados de carga, error y vacío que exige la prueba técnica.
 
-**Demo:** _pendiente de deploy_ · **Stack:** React 19 · Vite 6 · TypeScript · Tailwind v4 · Leaflet
+**Demo:** https://fleet-control-monitor.vercel.app · **Stack:** React 19 · Vite 6 · TypeScript · Tailwind v4 · Leaflet
 
 ---
 

@@ -85,7 +85,7 @@ export function MapView({ position, online, theme, vehicleLabel, loading = false
     const url = raw.trim().replace(/^['"]|['"]$/g, '') || 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
     tilesRef.current = L.tileLayer(url, {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
     }).addTo(map);
   }, [theme]);

@@ -1,4 +1,4 @@
-import { Activity, Database } from 'lucide-react';
+import { Activity, Database, LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import type { Theme } from '../lib/useTheme';
 
@@ -7,9 +7,10 @@ interface HeaderProps {
   onToggleTheme: () => void;
   isLive: boolean;
   sourceLabel: string;
+  onBack?: () => void;
 }
 
-export function Header({ theme, onToggleTheme, isLive, sourceLabel }: HeaderProps) {
+export function Header({ theme, onToggleTheme, isLive, sourceLabel, onBack }: HeaderProps) {
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-4">
       <div className="flex min-w-0 items-center gap-3">
@@ -49,6 +50,17 @@ export function Header({ theme, onToggleTheme, isLive, sourceLabel }: HeaderProp
           {sourceLabel}
         </span>
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            title="Volver a elegir servidor"
+            className="flex h-9 items-center justify-center gap-2 rounded-[8px] border border-border bg-surface px-3 text-[13px] font-semibold text-text-2 transition-colors hover:bg-surface-2 hover:text-text"
+          >
+            <LogOut size={15} aria-hidden="true" />
+            <span className="hidden sm:inline">Cambiar servidor</span>
+          </button>
+        )}
       </div>
     </header>
   );

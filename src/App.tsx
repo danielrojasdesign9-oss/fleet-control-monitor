@@ -77,6 +77,7 @@ export default function App() {
           onToggleTheme={toggleTheme}
           isLive={false}
           sourceLabel={session.sourceLabel}
+          onBack={handleBack}
         />
         <ErrorState error={fleet.error} onRetry={fleet.retry} onBack={handleBack} />
       </div>
@@ -92,6 +93,7 @@ export default function App() {
         onToggleTheme={toggleTheme}
         isLive={!loading && fleet.devices.length > 0}
         sourceLabel={session.sourceLabel}
+        onBack={handleBack}
       />
 
       <div className="flex flex-1 flex-col overflow-y-auto lg:min-h-0 lg:flex-row lg:overflow-hidden">

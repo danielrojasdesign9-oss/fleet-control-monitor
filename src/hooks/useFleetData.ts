@@ -76,6 +76,7 @@ export function useFleetData(baseUrl: string | undefined, active: boolean) {
         if (cancelled || !mountedRef.current) return;
         if (err instanceof TraccarError && err.kind === 'network') {
           setError(err);
+          setStatus('error');
         }
       } finally {
         if (!cancelled && mountedRef.current) {
